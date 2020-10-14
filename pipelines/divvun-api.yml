@@ -1,0 +1,34 @@
+resources:
+- name: concourse-scripts
+  type: git
+  source: 
+    uri: https://github.com/divvun/concourse-scripts.git
+    branch: main
+- name: divvun-api
+  type: git
+  source: 
+    uri: https://github.com/divvun/divvun-api.git
+    branch: develop
+
+jobs:
+  - name: build-divvun-api
+    public: true
+    plan:
+    - get: concourse-scripts
+    - get: divvun-api
+      trigger: true
+    - task: build-divvun-api
+      config:
+        inputs:
+          - name: concourse-scripts
+          - name: divvun-api
+
+        platform: linux
+
+        image_resource:
+          type: registry-image
+          source: {repository: rust}
+
+        run:
+          path: ./concourse-scripts/ls.sh
+          args: []
